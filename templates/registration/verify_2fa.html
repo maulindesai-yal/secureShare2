@@ -1,0 +1,11 @@
+<!-- verify_2fa.html -->
+<h2>Verify Your Identity</h2>
+<form method="post">
+  {% csrf_token %}
+  <label for="code">Enter the code from your authenticator app:</label>
+  <input type="text" id="code" name="code" required>
+  <button type="submit">Verify</button>
+</form>
+{% if error %}
+  <p style="color: red;">{{ error }}</p>
+{% endif %}

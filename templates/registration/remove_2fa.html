@@ -1,0 +1,7 @@
+<!-- remove_2fa.html -->
+<h2>Remove Two-Factor Authentication</h2>
+<form method="post">
+  {% csrf_token %}
+  <p>Are you sure you want to disable Two-Factor Authentication? This action cannot be undone.</p>
+  <button type="submit">Remove 2FA</button>
+</form>

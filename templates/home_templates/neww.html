@@ -1,0 +1,23 @@
+<!-- ... (previous code remains the same) ... -->
+
+<div class="box">
+    <h2>Your Requested Documents</h2>
+
+    {% if document_info %}
+        {% for info in document_info %}
+            <div class="request-item">
+                <p><strong>{{ info.request.document_title }}</strong>'s access has been granted by {{ info.request.requested_for.get_full_name }}</p>
+                
+                {% if info.file_path %}
+                    <a href="{{ info.file_path }}" class="view-btn" target="_blank">View Document</a>
+                {% else %}
+                    <p>Document file not found.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No documents have been shared with you.</p>
+    {% endif %}
+</div>
+
+<!-- ... (rest of the code remains the same) ... -->

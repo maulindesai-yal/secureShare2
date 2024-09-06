@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureShare Dashboard</title>
+</head>
+<body>
+    <p>{{ total_documents }}</p>
+    <div class="sidebar">
+        <h2><a href="{% url 'dashboard' %}">SecureShare</a></h2>
+        <ul>
+            <li><a href="{% url 'view_all_documents' %}">My Documents</a></li>
+            <li><a href="{% url 'upload_new_document' %}">Upload New Document</a></li>
+            <li><a href="{% url 'access_request' %}">Access Requests</a></li>
+            <li><a href="{% url 'pending_request' %}">Pending Requests</a></li>
+            <li><a href="{% url 'requested_document' %}">Requested Documents</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>Welcome</h1>
+            <div class="user-profile">
+                <div class="user-profile-icon">👤</div>                
+                <div class="dropdown-menu">
+                    <a href="{% url 'settings' %}">Settings</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="stats-container">
+            <div class="stat-box">
+                <h3><a href="{% url 'view_all_documents' %}">Total Documents</a></h3>
+                <p>{{ total_documents }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Shared Documents</h3>
+                <p>{{ shared_documents }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Pending Requests</h3>
+                <p>0</p>
+            </div>
+        </div>
+        <div class="quick-actions">
+            <button><a href="{% url 'view_all_documents' %}">View All Documents</a></button>
+            <button><a href="{% url 'upload_new_document' %}">Upload New Document</a></button>
+        </div>
+        
+        <div class="notifications">
+            <h2>Notifications</h2>
+            <div id="notificationsContainer"></div>
+        </div>
+        <div class="recent-activity">
+            <h2>Recent Activity</h2>
+            <div id="recentActivityContainer"></div>
+        </div>       
+        <div class="footer">
+            <!-- Add html_link which is defined in dashboard function should be added here -->
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Help/Support</a> | <a href="{{ link_content.href }}">{{ link_content.text }}</a>
+        </div>
+    </div>
+
+    <script>
+        
+        // Toggle dropdown menu
+        document.querySelector('.user-profile').addEventListener('click', function() {
+            const dropdown = document.querySelector('.dropdown-menu');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Simulated data (replace with actual data from your backend)
+        const userData = {
+            firstName: "{{ user.first_name|title }}",
+            totalDocuments: "{{ total_documents }}",
+            sharedDocuments: "{{ shared_documents }}",
+            pendingRequests: 0
+        };
+
+        const notifications = [
+            "New document shared with you",
+            "Access request approved",
+            "System maintenance scheduled"
+        ];
+
+        const recentActivity = [
+            "Uploaded 'Tax Return 2023.pdf'",
+            "Shared 'Project Proposal.docx' with Jane",
+            "Approved access request from Team Lead"
+        ];
+
+        const documentCategories = [
+            { name: "Tax Return 2023.pdf", category: "Financial" },
+            { name: "Passport.jpg", category: "Personal ID" },
+            { name: "Medical Report.pdf", category: "Health" },
+            { name: "Diploma.pdf", category: "Education" }
+        ];
+
+        
+        document.querySelector('.header h1').textContent = `Welcome ${userData.firstName}`;
+        //document.querySelectorAll('.stat-box p')[0].textContent = userData.totalDocuments;
+        //document.querySelectorAll('.stat-box p')[1].textContent = userData.sharedDocuments;
+        //document.querySelectorAll('.stat-box p')[2].textContent = userData.pendingRequests;
+
+        // Show/Hide notifications
+        document.getElementById('Notifications').addEventListener('click', function() {
+            const notifications = document.querySelector('.notifications');
+            notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Populate notifications
+        const notificationsContainer = document.getElementById('notificationsContainer');
+        notifications.forEach(notification => {
+            const notificationElement = document.createElement('div');
+            notificationElement.className = 'notification';
+            notificationElement.textContent = notification;
+            notificationsContainer.appendChild(notificationElement);
+        });
+
+        // Show notifications one by one
+        let currentNotification = 0;
+        const notificationElements = document.querySelectorAll('.notification');
+
+        function showNextNotification() {
+            notificationElements.forEach((el, index) => {
+                el.style.display = index === currentNotification ? 'block' : 'none';
+            });
+            currentNotification = (currentNotification + 1) % notificationElements.length;
+            setTimeout(showNextNotification, 3000);
+        }
+        showNextNotification();
+
+        // Populate recent activity
+        const recentActivityContainer = document.getElementById('recentActivityContainer');
+        recentActivity.forEach(activity => {
+            const activityElement = document.createElement('div');
+            activityElement.className = 'document-item';
+            activityElement.textContent = activity;
+            recentActivityContainer.appendChild(activityElement);
+        });
+
+        // Populate document categories table
+        const documentCategoriesContainer = document.getElementById('documentCategoriesContainer');
+        documentCategories.forEach(doc => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${doc.name}</td>
+                <td>${doc.category}</td>
+                <td><button class="action-button">View</button></td>
+            `;
+            documentCategoriesContainer.appendChild(row);
+        });
+
+        // Search functionality
+        document.querySelector('.search-bar input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.document-item, .document-table tr').forEach(item => {
+                if (item.tagName === 'TR' && item.parentElement.tagName === 'THEAD') return;
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function(e) {
+            if (!document.querySelector('.user-profile').contains(e.target)) {
+                document.querySelector('.dropdown-menu').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --background-color: #ecf0f1;
+        --text-color: #333;
+        --light-text-color: #ecf0f1;
+        --hover-color: #2980b9;
+        --header-color: #34495e;
+        --accent-color: #e74c3c;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: var(--background-color);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        min-height: 100vh;
+        color: var(--text-color);
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: var(--secondary-color);
+        color: var(--light-text-color);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sidebar h2 {
+        margin-bottom: 10px;
+        font-size: 1.5em;
+        color: var(--light-text-color);
+    }
+
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        width: 100%;
+    }
+
+    .sidebar li {
+        margin-bottom: 15px;
+    }
+
+    .sidebar a {
+        color: var(--light-text-color);
+        text-decoration: none;
+        transition: color 0.3s;
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+    }
+
+    .sidebar a:hover {
+        background-color: var(--hover-color);
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: var(--background-color);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background-color: var(--header-color);
+        color: var(--light-text-color);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+
+    .header h1 {
+        margin: 0;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .user-profile-icon {
+        cursor: pointer;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        padding: 10px;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .user-profile span {
+        font-size: 1em;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        z-index: 1000;
+    }
+
+    .dropdown-menu a {
+        color: var(--text-color);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .stats-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        flex: 1 1 30%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-width: 250px;
+        text-align: center;
+    }
+
+    .stat-box h3 {
+        margin-top: 0;
+    }
+
+    .notifications {
+        display: none;
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .notification {
+        background-color: var(--accent-color);
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+
+    .document-categories, .recent-activity {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .document-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .document-table th, .document-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .document-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .document-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .document-table tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .action-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .action-button:hover {
+        background-color: var(--hover-color);
+    }
+
+    .quick-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .quick-actions button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .quick-actions button:hover {
+        background-color: var(--hover-color);
+    }
+
+    .quick-actions button a {
+        text-decoration: none;
+        color: white;
+    }
+
+    .search-bar {
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .search-bar input {
+        width: 98%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #7f8c8d;
+    }
+
+    .document-item {
+        background-color: #f1f1f1;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+        body {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            order: 2;
+            padding: 10px;
+        }
+
+        .main-content {
+            order: 1;
+            padding: 10px;
+        }
+
+        .stats-container {
+            flex-direction: column;
+        }
+
+        .stat-box {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .quick-actions {
+            flex-direction: column;
+        }
+
+        .quick-actions button {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+</html>

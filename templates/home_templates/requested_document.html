@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requested Documents - SecureShare</title>
+  <!-- Copy the same styles from access_request.html -->
+  <style>
+    /* Same style block from access_request.html */
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2c3e50;
+      --background-color: #ecf0f1;
+      --text-color: #333;
+      --light-text-color: #ecf0f1;
+      --hover-color: #2980b9;
+      --header-color: #34495e;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--background-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+      color: var(--text-color);
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: var(--secondary-color);
+      color: var(--light-text-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 10px;
+      font-size: 1.5em;
+      color: var(--light-text-color);
+    }
+
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+      width: 100%;
+    }
+
+    .sidebar li {
+      margin-bottom: 15px;
+    }
+
+    .sidebar a {
+      color: var(--light-text-color);
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background-color: var(--header-color);
+      color: var(--light-text-color);
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+
+    .box {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .request-item {
+      background-color: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .view-btn {
+      display: inline-block;
+      padding: 10px 15px;
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .view-btn:hover {
+      background-color: var(--hover-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2><a href="{% url 'dashboard' %}">SecureShare</a></h2>
+    <ul>
+      <li><a href="{% url 'view_all_documents' %}">My Documents</a></li>
+      <li><a href="{% url 'upload_new_document' %}">Upload New Document</a></li>
+      <li><a href="{% url 'access_request' %}">Access Requests</a></li>
+      <li><a href="{% url 'pending_request' %}">Pending Requests</a></li>
+      <li><a href="{% url 'requested_document' %}">Requested Documents</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="header">
+      <h1>Requested Documents</h1>
+    </div>
+
+    <!-- List of documents granted with the user -->
+    <div class="box">
+      <h2>Your Requested Documents</h2>
+      {% if requested_document %}
+        {% for request in requested_document %}
+          <div class="request-item">
+            <p><strong>{{ request.document_title }}</strong> 's access has been granted by {{ request.requested_for.get_full_name }}</p>
+            <a href="{{ request.file_url }}" class="view-btn" target="_blank">View Document</a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No documents have been shared with you.</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

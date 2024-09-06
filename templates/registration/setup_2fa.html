@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup 2FA</title>
+</head>
+<body>
+    <h1>Setup Two-Factor Authentication (2FA)</h1>
+    <p>Scan the QR code below with your authenticator app:</p>
+
+    <!-- Display the QR code -->
+    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+
+    <p>Or, enter this secret key manually into your authenticator app: <strong>{{ secret_key }}</strong></p>
+
+    <!-- Button to remove 2FA -->
+    <p>Click the button below to remove 2FA.</p>
+    <form action="{% url 'remove_2fa' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Remove 2FA</button>
+    </form>
+
+    <!-- Button to that says "Verify 2FA" setup done -->
+    <p>Click the button below to verify 2FA setup is done.</p>
+    <form action="{% url 'dashboard' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Done</button>
+    </form>
+</body>
+</html>
