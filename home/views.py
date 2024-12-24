@@ -77,7 +77,7 @@ def upload_new_document(request):
     return render(request, 'home_templates/upload_new_document.html',{'document_titles': document_titles})
 
 def validate_file_size(file):
-    max_upload_size = 2 * 1024 * 1024  # 5 MB size limit
+    max_upload_size = 2 * 1024 * 1024  # 2 MB size limit
 
     if file.size > max_upload_size:
         raise ValidationError(f"File size exceeds the allowed limit of {max_upload_size / (1024 * 1024)} MB.")
@@ -85,6 +85,8 @@ def validate_file_size(file):
 @login_required
 def view_all_documents(request):
     documents = Document.objects.filter(user_id=request.user)
+    for i in documents:
+        print(i.file_path)
     return render(request, 'home_templates/view_all_documents.html', {'documents': documents})
 
 @login_required
@@ -188,3 +190,4 @@ def requested_document(request):
       'requested_document': requested_document
     }
     return render(request, 'home_templates/requested_document.html', context)
+

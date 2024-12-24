@@ -66,6 +66,7 @@ def logout_user(request):
 def setup_2fa(request):
   user = request.user
   user.get_secret_key()
+  
   # Generate QR code for the user
   qr_code = user.generate_qr_code()
 

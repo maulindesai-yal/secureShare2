@@ -109,6 +109,7 @@
     .login-link a:hover {
       text-decoration: underline;
     }
+    
   </style>
 </head>
 <body>
@@ -119,12 +120,14 @@
       <input type="text" placeholder="First Name" name="first_name" required />
       <input type="text" placeholder="Last Name" name="last_name" required />
       <input type="email" placeholder="Email" name="email" required />
-      <input type="password" id="password" placeholder="Password" name="password" required />
+      <input type="password" id="password" placeholder="Password" name="password" class="from-control" required />
+      <span toggle="#password" class="fa fa-fw fa-eye password-toggle" onclick="togglePassword('password')"></span>
       <input type="password" id="confirm_password" placeholder="Confirm Password" name="confirm_password" required />
+      <span toggle="#confirm_password" class="fa fa-fw fa-eye password-toggle" onclick="togglePassword('confirm_password')"></span>
       <button type="submit">Register</button>
     </form>
     <div class="login-link">
-        <span>Already have an account? </span><a href="{% url 'login' %}">Login here</a>
+      <span>Already have an account? </span><a href="{% url 'login' %}">Login here</a>
     </div>
     </div>
 </body>
